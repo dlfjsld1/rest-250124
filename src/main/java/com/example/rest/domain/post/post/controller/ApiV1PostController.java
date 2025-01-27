@@ -50,18 +50,28 @@ public class ApiV1PostController {
             String title,
             @NotBlank
             @Length(min=3)
-            String content) {};
+            String content
+    ) {};
+
+    record WriteRespBody(
+            long id,
+            long totalCount
+    ) {}
 
     @PostMapping
-    public RsData<Void> write(
+    public RsData<WriteRespBody> write(
             @RequestBody
             @Valid
             WriteReqBody body
     ) {
-        postService.write(body.title(), body.content());
+        Post post = postService.write(body.title(), body.content());
         return new RsData<>(
                 "200-1",
-                "글 작성이 완료되었습니다."
+                "글 작성이 완료되었습니다.",
+                new WriteRespBody(
+                        post.getId(),
+                        postService.count()
+                )
         );
     }
 
