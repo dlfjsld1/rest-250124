@@ -21,24 +21,26 @@ public class ApiV1PostController {
 
     @GetMapping
     @ResponseBody
-    public List<PostDto> getItems() {
+    public RsData getItems() {
 
         List<Post> posts = postService.getItems();
 
-        return posts.stream()
+        List<PostDto> postDtos =  posts.stream()
                 .map(PostDto::new)
                 .toList();
+        return new RsData("200", "글 조회가 완료되었습니다.", postDtos);
+
     }
 
 
     @GetMapping("{id}")
-    public PostDto getItem(
+    public RsData getItem(
             @PathVariable
             long id
     ) {
         Post post = postService.getItem(id).get();
         PostDto postDto = new PostDto(post);
-        return postDto;
+        return new RsData("200", "글 조회가 완료되었습니다.", postDto);
     }
 
 
@@ -56,11 +58,10 @@ public class ApiV1PostController {
             @Valid
             WriteReqBody body
     ) {
-        Post post = postService.write(body.title(), body.content());
+        postService.write(body.title(), body.content());
         return new RsData(
                 "200-1",
-                "글 작성이 완료되었습니다.",
-                post.getId()
+                "글 작성이 완료되었습니다."
         );
     }
 
