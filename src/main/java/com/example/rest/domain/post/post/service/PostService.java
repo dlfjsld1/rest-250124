@@ -3,6 +3,8 @@ import com.example.rest.domain.post.post.entity.Post;
 import com.example.rest.domain.post.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -28,7 +30,14 @@ public class PostService {
         return postRepository.count();
     }
 
+    @Transactional
+    public void modify(Post post, String title, String content) {
+        post.setTitle(title);
+        post.setContent(content);
+    }
+
     public void delete(Post post) {
         postRepository.delete(post);
     }
+
 }

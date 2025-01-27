@@ -1,4 +1,4 @@
-package com.example.rest.global;
+package com.example.rest.global.entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
