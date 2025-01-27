@@ -53,7 +53,7 @@ public class ApiV1PostController {
             String content) {};
 
     @PostMapping
-    public RsData write(
+    public RsData<Void> write(
             @RequestBody
             @Valid
             WriteReqBody body
@@ -75,7 +75,7 @@ public class ApiV1PostController {
             String content) {}
 
     @PutMapping("{id}")
-    public RsData modify(
+    public RsData<Void> modify(
             @PathVariable
             long id,
             @RequestBody
@@ -92,7 +92,7 @@ public class ApiV1PostController {
 
 
     @DeleteMapping("/{id}")
-    public RsData delete(@PathVariable long id) {
+    public RsData<Void> delete(@PathVariable long id) {
         Post post = postService.getItem(id).get();
         postService.delete(post);
 
