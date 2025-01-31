@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,20 +61,23 @@ public class ApiV1PostController {
     ) {}
 
     @PostMapping
-    public RsData<WriteRespBody> write(
+    public ResponseEntity<RsData<WriteRespBody>> write(
             @RequestBody
             @Valid
             WriteReqBody body
     ) {
         Post post = postService.write(body.title(), body.content());
-        return new RsData<>(
-                "200-1",
-                "글 작성이 완료되었습니다.",
-                new WriteRespBody(
-                        post.getId(),
-                        postService.count()
-                )
-        );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new RsData<>(
+                        "200-1",
+                        "글 작성이 완료되었습니다.",
+                        new WriteRespBody(
+                                post.getId(),
+                                postService.count()
+                        )
+                ));
     }
 
 
@@ -94,7 +99,8 @@ public class ApiV1PostController {
     ) {
         Post post = postService.getItem(id).get();
         postService.modify(post, body.title(), body.content());
-        return new RsData<>(
+
+        return new RsData<Void>(
                 "200-1",
                 "%d번 글 수정이 완료되었습니다.".formatted(id)
         );
@@ -111,4 +117,5 @@ public class ApiV1PostController {
                 "%d번 글 삭제가 완료되었습니다.".formatted(id)
         );
     }
+
 }
