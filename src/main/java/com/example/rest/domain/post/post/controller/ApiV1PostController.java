@@ -8,11 +8,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController // @Controller와 @ResponseBody 어노테이션을 합친 기능
 @RequestMapping("/api/v1/posts")
@@ -40,7 +39,14 @@ public class ApiV1PostController {
             @PathVariable
             long id
     ) {
-        Post post = postService.getItem(id).get();
+
+        Post post = null;
+        try{
+            post = postService.getItem(id).get();
+
+        } catch(NoSuchElementException e) {
+            return new RsData<>("404-1", "%d번 글이 존재하지 않습니다.".formatted(id), null);
+        }
         PostDto postDto = new PostDto(post);
         return new RsData<>("200", "글 조회가 완료되었습니다.", postDto);
     }
@@ -61,23 +67,21 @@ public class ApiV1PostController {
     ) {}
 
     @PostMapping
-    public ResponseEntity<RsData<WriteRespBody>> write(
+    public RsData<WriteRespBody> write(
             @RequestBody
             @Valid
             WriteReqBody body
     ) {
         Post post = postService.write(body.title(), body.content());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new RsData<>(
+        return new RsData<>(
                         "200-1",
                         "글 작성이 완료되었습니다.",
                         new WriteRespBody(
                                 post.getId(),
                                 postService.count()
                         )
-                ));
+        );
     }
 
 
@@ -113,7 +117,7 @@ public class ApiV1PostController {
         postService.delete(post);
 
         return new RsData(
-                "200-1",
+                "204-1",
                 "%d번 글 삭제가 완료되었습니다.".formatted(id)
         );
     }

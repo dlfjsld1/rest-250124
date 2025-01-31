@@ -15,6 +15,7 @@ public class ResponseAspect {
 
     //final 붙이고 @RequiredArgsConstructor를 설정해 스프링부트가 자동으로
     //HttpServletResponse에 맞는 값을 넣어준다.
+//    private final HttpServletRequest request;
     private final HttpServletResponse response;
 
     @Around("""
@@ -35,17 +36,18 @@ public class ResponseAspect {
             )
         """
     )
-    public Object test(ProceedingJoinPoint jointPoint) throws Throwable {
+    public Object responseAspect(ProceedingJoinPoint jointPoint) throws Throwable {
 //        System.out.println("pre");
 
         Object rst = jointPoint.proceed();
 
         if(rst instanceof RsData<?> rsData) {
-            String msg = rsData.getMsg();
-            System.out.println("msg: " + msg);
+//            String msg = rsData.getMsg();
+//            System.out.println("msg: " + msg);
 
             //응답 코드를 설정
-            response.setStatus(201);
+            int statusCode = rsData.getStatusCode();
+            response.setStatus(statusCode);
         }
 
 
